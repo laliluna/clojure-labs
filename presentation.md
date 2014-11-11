@@ -1,23 +1,6 @@
-IDEs
-----------
+# Prerequisites
 
-Many choices:
-
-- Emacs
-- IntelliJ with LaClojure or Cursive plugin
-- VI
-- Sublime
-- Eclipse
-- Lighttable (young but probably soon amazing)
-
-Take **Sublime**, if you just want to try out Clojure.
-
-Many Clojure developers use Emacs or IntelliJ with Cursive plugin. 
-
-**Emacs is cool but hard to learn. Focus on one thing at a time: Clojure!!**
-
-Prerequisites
--------------
+## The Clojure build tool
 
 - Leiningen = the Clojure package manager and project jumpstarter
 - Java
@@ -33,6 +16,23 @@ Prerequisites
 	
 	-> Leiningen is a tool for working with Clojure projects.
 	...
+
+## An IDE
+
+Many choices:
+
+- Emacs
+- IntelliJ with LaClojure or Cursive plugin
+- Eclipse
+- Lighttable (young but probably soon amazing)
+- Sublime
+- VI
+
+Most popular in the Clojure world: Emacs and IntelliJ with Cursive plugin. 
+
+**Emacs is cool but hard to learn. Focus on one thing at a time: Clojure!!**
+
+For this workshop, take **Sublime** or the Cursive plugin for IntelliJ.
 
 **Sublime**
 
@@ -50,7 +50,7 @@ Shortcuts:
 - Ctrl+, f		Send the current file to REPL
 - Ctrl+, l		Send the current line to REPL
 
-Lab 1 - Exploring the REPL
+Lab - Exploring the REPL
 --------------------------
 
 Start a REPL
@@ -71,7 +71,7 @@ Try a couple of math operations in the REPL.
 
 Try more stuff
 
-Lab 2 - Test driven development
+Lab - Test driven development
 -------------------------------
 
 Clojure has its own test library *clojure.test*,  but there are other libraries like
@@ -88,14 +88,7 @@ Steps:
 
 ### Prepare the project
 
-Two options:
-
-**a) use a template**
-
-	lein new midje stringcalc
-	
-**b) setup the project by hand**
-
+Create an empty project
 
 	lein new stringcalc
 
@@ -178,6 +171,12 @@ If not already open in your browser, go to http://localhost:3000/
 
 The routes are defined in the *handlers.clj* in *src/hello-world*
 
+As we build a JSON REST api and not a website, please change the ring handler in *handlers.clj* to:
+
+	(def app
+	  (wrap-defaults app-routes api-defaults))
+	
+
 **Destructure request parameters**
 
     (GET "/myage" {{:keys [name age]} :params}
@@ -203,18 +202,23 @@ Change your handler.
 	            [compojure.handler :as handler]
 	            [compojure.route :as route]
 	            [ring.util.response :refer [response]]
-	            [ring.middleware.json :refer [wrap-json-response]]))
+            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
+				))
 
 	(defroutes app-routes
 	  (GET "/" [] (response {:message "Hello World"}))
 
-	(def app
-	  (-> (handler/site app-routes)
-	  	(wrap-json-response)))
+	  (def app
+		(-> 
+			(wrap-defaults app-routes api-defaults)
+			(wrap-json-body {:keywords? true})
+			(wrap-json-response)))
 	
 Exercises:
 
 - Add a POST and a DELETE service
+
+Hint: JSON params are stored in request under {:body {...}}
 
 ### Pointers
 
